@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unlock PC</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #qr-code { margin: 20px; }
+        #unlock-form { margin: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Unlock Your PC</h1>
+    <div id="qr-code">
+        <img id="qr-image" src="" alt="QR Code">
+    </div>
+    <div id="unlock-form">
+        <form id="unlockForm">
+            <label for="token">Enter Token:</label>
+            <input type="text" id="token" name="token" required>
+            <button type="submit">Unlock PC</button>
+        </form>
+        <p id="response"></p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('http://your-pc-server-url/generate_qr')
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    document.getElementById('qr-image').src = url;
+                });
+
+            document.getElementById('unlockForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const token = document.getElementById('token').value;
+
+                fetch('http://your-pc-server-url/unlock', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({ token: token })
+                })
+                .then(response => response.text())
+                .then(text => {
+                    document.getElementById('response').textContent = text;
+                });
+            });
+        });
+    </script>
+</body>
+</html>
